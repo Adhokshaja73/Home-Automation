@@ -3,7 +3,7 @@
 #include <Ethernet.h>
 #include <PubSubClient.h>
 
-// hello
+// HI METH
 int ledpin=LED_BUILTIN;
 // Update these with values suitable for your network.
 byte mac[]    = {  0xAF, 0xED, 0xBF, 0xFE, 0xFE, 0x00 };
