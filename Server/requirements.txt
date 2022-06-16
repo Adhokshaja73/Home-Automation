@@ -1,4 +1,3 @@
-speechrecognition
-pyttsx3
-pypiwin32
 django
+django-allauth
+paho-mqtt

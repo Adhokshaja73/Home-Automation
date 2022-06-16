@@ -1,0 +1,62 @@
+<html>
+{% load static %}
+
+<head>
+    <title>Sign In</title>
+    <link rel="stylesheet" href="{% static 'loginstyle.css' %}">
+</head>
+
+<body>
+    <strong>Menu:</strong>
+    <div>
+        <strong>Messages:</strong>
+        <ul>
+            <li>You have signed out.</li>
+        </ul>
+    </div>
+
+    <div>
+        <ul>
+            <li><a href="/accounts/login/">Sign In</a></li>
+            <li><a href="/accounts/signup/">Sign Up</a></li>
+
+        </ul>
+    </div>
+
+
+    <h1>Sign In</h1>
+    <p>If you have not created an account yet, then please
+        <a href="/accounts/signup/?next=%2F">sign up</a> first.
+    </p>
+
+
+    <form class="login" method="POST" action="/accounts/login/">
+        {% csrf_token %}
+        <p>
+            <label for="id_login">Username:</label>
+            <!-- <input type="text" name="login" placeholder="Username" autocomplete="username" maxlength="150" required=""
+                id="id_login"> -->
+        </p>
+        <p>
+            <label for="id_password">Password:</label>
+            <input type="password" name="password" placeholder="Password" autocomplete="current-password" required=""
+                id="id_password">
+
+
+        </p>
+
+
+        <p>
+            <label for="id_remember">Remember Me:</label>
+            <input type="checkbox" name="remember" id="id_remember">
+        </p>
+
+        <input type="hidden" name="next" value="/">
+
+        <a class="button secondaryAction" href="/accounts/password/reset/">Forgot Password?</a>
+        <button class="primaryAction" type="submit">Sign In</button>
+    </form>
+
+</body>
+
+</html>
