@@ -50,15 +50,15 @@
      var pvalid=document.getElementsByTagName('valid');
      pinno.onkeyup=function()
     {
-       const validphone=/^\b([1-9]|1[0-5]|2[2-8])\b$/;                  
+       const validpin=/^\b([1-9]|1[0-5]|2[2-8])\b$/;              
        
-       if(validphone.test(pinno.value))
+       if(validpin.test(pinno.value))
        {
         pvalid[0].innerText="";
        }
-       else{
-        pvalid[0].innerText="Should only be from 1-15  and from 22-28";
-       
+       else
+       {
+        pvalid[0].innerText="Should only be from 1-15  and from 22-28";            
        }
     }
 </script>
