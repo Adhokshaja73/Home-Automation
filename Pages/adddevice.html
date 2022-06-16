@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Smart Code</title>
+	<title>Add Device</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="css/mainstyle.css">
@@ -20,18 +20,22 @@
 			<div class="wrap-login100 p-t-30 p-b-50">
 				<span class="login100-form-title p-b-41" style="margin-bottom: 40px;
                 font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
-					Smart Home Code
+					ADD DEVICE
 				</span>
 				<form class="login100-form validate-form p-b-33 p-t-5">
 
-					<div class="wrap-input100 validate-input">
-						<input class="input100" type="text" name="code" placeholder="Smart Home Code " required>
-						<span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    <div class="wrap-input100 validate-input">
+						<input class="input100" type="text" name="devname" placeholder="Device Name" required>						
+					</div>		
+
+                    <div class="wrap-input100 validate-input">                        
+						<input class="input100" type="number" id="pinnum" name="pinnumber" placeholder="Pin Number" required>
+                        <valid style="font-size: 15px;padding: 15px;color:#db2303;"></valid>						
 					</div>
 					
 					<div class="container-login100-form-btn m-t-32">
 						<button class="login100-form-btn" style="margin-bottom: 30px;">
-							JOIN
+							Add
 						</button>
 					</div>
 					
@@ -41,3 +45,20 @@
 	</div>
 </body>
 </html>
+<script>
+     var pinno=document.getElementById('pinnum');
+     var pvalid=document.getElementsByTagName('valid');
+     pinno.onkeyup=function()
+    {
+       const validphone=/^\b([1-9]|1[0-5]|2[2-8])\b$/;                  
+       
+       if(validphone.test(pinno.value))
+       {
+        pvalid[0].innerText="";
+       }
+       else{
+        pvalid[0].innerText="Should only be from 1-15  and from 22-28";
+       
+       }
+    }
+</script>

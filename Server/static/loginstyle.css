@@ -10,12 +10,7 @@
     src: url('../fonts/ubuntu/Ubuntu-Bold.ttf'); 
   }
   
-  
-  
-  
-  /*//////////////////////////////////////////////////////////////////
-  [ RESTYLE TAG ]*/
-  
+   
   * {
       margin: 0px; 
       padding: 0px; 
@@ -54,12 +49,8 @@
       font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       font-size: 14px;
       line-height: 1.7;
-      color: #666666;
+      color: #000;
       margin: 0px;
-      transition: all 0.4s;
-      -webkit-transition: all 0.4s;
-    -o-transition: all 0.4s;
-    -moz-transition: all 0.4s;
   }
   
   a:focus {
@@ -68,7 +59,7 @@
   
   a:hover {
       text-decoration: none;
-    color: rgb(255, 0, 0);
+      color: rgb(255, 0, 0);
   }
   
   /*---------------------------------------------*/
@@ -255,9 +246,10 @@
   .focus-input100 {
     position: absolute;
     display: block;
+    padding: 10px;
     width: 100%;
     height: 100%;
-    top: 0;
+    top: 10px;
     left: 0;
     pointer-events: none;
   }
@@ -286,15 +278,13 @@
   .focus-input100::after {
     font-family: Linearicons-Free;
     font-size: 18px;
-    color: #999999;
-  
+    color: #999999;  
     content: attr(data-placeholder);
     display: block;
     width: 100%;
     position: absolute;
     top: 40px;
-    left: 35px;
-   
+    left: 35px;  
   
     -webkit-transition: all 0.4s;
     -o-transition: all 0.4s;
