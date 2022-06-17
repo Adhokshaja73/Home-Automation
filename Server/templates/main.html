@@ -1,64 +1,118 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-        <meta http-equiv="Pragma" content="no-cache" />
-        <meta http-equiv="Expires" content="0" />
-        <title>Speech to text conversion using JavaScript</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{% static 'style.css' %}">
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+{% load static %}
 
+<head>
+    <title>Smart Command</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+</head>
 
-    </head>
+<body>
+    <div class="limiter">
+        <header>
+            <div class="topnav">
+                <a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+            </div>
+        </header>
+        <div class="container-login100" style="background-image: url('static/images/bg-01.jpg');">
+            <div class="wrap-login100 p-t-30 p-b-50" style="margin-top: -50px;">
+                <span class="login100-form-title p-b-41" style="margin-bottom: 40px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+                    YOUR COMMAND FOR SMART HOME
+                </span>
 
-    <body>
-       
-        <div class="mycontainer">
-            <h1>Speech to text conversion </h1>
-            <div class="mywebapp"> 
-                <div class="input">
-                    <textarea id="textbox" rows="6"></textarea>
-                </div>         
-                <button id="start-btn" title="Start">Start</button>
-                <p id="instructions">Press the Start button</p>
-                <div>
-                    <input type="text" id="message">
-                    <button id="submit">Submit</button>
-                    <h1 id="result"></h1>
+                <div class="login100-form validate-form p-b-33 p-t-5">
+                    <div class="container-login100-form-btn m-t-32">
+                        <button id="start-btn" class="long-press-btn" title="Start">Start</button>
+                        <div class="wrap-input100 validate-input">
+                            <p class="input100" id="instructions">Press the Start button</p>
+                        </div>
+
+                        <button id="stop-btn" title="Stop">Stop</button>
+                    </div>
+
+                    <div class="wrap-input100 validate-input">
+                        <textarea class="input100" id="textbox" placeholder="Home Command "></textarea>
+                    </div>
                 </div>
-
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
             </div>
         </div>
-       
-        <script src="{% static 'script.js' %}"></script>
-    </body>
-    <script>
-        submitButton = document.getElementById("submit");
-        submitButton.onclick = function(){
-            $.ajax({
-				type: 'POST',
-				url: "",
-				data : 
-					{
-						message: $("#message").val(),
-						pinNum: $("#pinNum").val(),
-						csrfmiddlewaretoken: $('{% csrf_token %}').val()
-	
-					},
-				success: function (response) {
-                    if(response.status == "success"){
-                        document.getElementById("result").innerHTML = response.status
-                    }
-                    else{
-                        document.getElementById("result").innerHTML = response.err_msg
-                    }
-				},
-			  })		
+    </div>
+</body>
+
+
+<script>
+
+    var SpeechRecognition = window.webkitSpeechRecognition;
+
+    var recognition = new SpeechRecognition();
+
+    var Textbox = $('#textbox');
+    var instructions = $('#instructions');
+
+    var Content = '';
+
+    recognition.continuous = true;
+
+    recognition.onresult = function (event) {
+
+        var current = event.resultIndex;
+
+        var transcript = event.results[current][0].transcript;
+
+        Content += transcript;
+        Textbox.val(Content);
+        $.ajax({
+            type: 'POST',
+            url: "home.html",
+            data:
+            {
+                message: transcript,
+                csrfmiddlewaretoken: $('{% csrf_token %}').val()
+
+            },
+            success: function (response) {
+                document.getElementById("result").innerHTML = response.result` `
+            },
+        })
+    };
+
+    recognition.onstart = function () {
+        instructions.text('Voice recognition is ON.');
+    }
+
+    recognition.onspeechend = function () {
+        instructions.text('No activity.');
+    }
+
+    recognition.onerror = function (event) {
+        if (event.error == 'no-speech') {
+            instructions.text('Try again.');
         }
-    </script>
+    }
+
+    $('#start-btn').on('click', function (e) {
+        if (Content.length) {
+            Content += ' ';
+        }
+        recognition.start();
+    });
+
+    Textbox.on('input', function () {
+        Content = $(this).val();
+    })
+
+
+    $('#stop-btn').on('click', function (e) {
+        recognition.abort();
+        instructions.text('press to record');
+    });
+</script>
+
 </html>
