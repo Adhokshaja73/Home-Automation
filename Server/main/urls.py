@@ -4,7 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.home),
+    path('Index.html', views.home),
     path('add_device.html', views.addDevice),
     path('remove_device.html', views.removeDevice),
-    path('post_message/<str:message>', views.postMessage)
+    path('home.html', views.main)
 ]

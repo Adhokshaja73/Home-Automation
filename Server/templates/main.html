@@ -26,9 +26,39 @@
                 </div>         
                 <button id="start-btn" title="Start">Start</button>
                 <p id="instructions">Press the Start button</p>
-                
+                <div>
+                    <input type="text" id="message">
+                    <button id="submit">Submit</button>
+                    <h1 id="result"></h1>
+                </div>
+
             </div>
         </div>
+       
         <script src="{% static 'script.js' %}"></script>
     </body>
+    <script>
+        submitButton = document.getElementById("submit");
+        submitButton.onclick = function(){
+            $.ajax({
+				type: 'POST',
+				url: "",
+				data : 
+					{
+						message: $("#message").val(),
+						pinNum: $("#pinNum").val(),
+						csrfmiddlewaretoken: $('{% csrf_token %}').val()
+	
+					},
+				success: function (response) {
+                    if(response.status == "success"){
+                        document.getElementById("result").innerHTML = response.status
+                    }
+                    else{
+                        document.getElementById("result").innerHTML = response.err_msg
+                    }
+				},
+			  })		
+        }
+    </script>
 </html>

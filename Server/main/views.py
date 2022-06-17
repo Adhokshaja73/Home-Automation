@@ -19,17 +19,17 @@ def home(request):
         # Save the post data
         topic = request.POST['topic']
         if(HomeBoardTopic.objects.filter(topic = topic).exists()):
-            return(render(request,"registration.html", {'err_msg' : 'Topic Already Subscribed. Please check your OWN board for topic.'}))
+            return(JsonResponse({'status' : 'failed' , 'err_msg' : 'Topic Already Subscribed. Please check your OWN board for topic.'}))
         user = request.user
         newHomeBoard = HomeBoardTopic( topic = topic, user = user)
         newHomeBoard.save()
-        return(redirect("add_device.html"))
+        return(JsonResponse({'status' : 'success'}))
     else:
         currentUserHome = HomeBoardTopic.objects.filter(user = request.user)
         if(currentUserHome.exists()):
             currentUserHome = currentUserHome.get()
             if(Device.objects.filter(topic = currentUserHome.topic).exists()):
-                return(render(request, "index.html", { 'board' : currentUserHome}))
+                return(redirect("home.html"))
             else:
                 return(redirect("add_device.html"))
         else:
@@ -88,28 +88,38 @@ def publishMessage(topic, pinNum, val):
     else:
         return("failed to publish message")
 
-def postMessage(request, message):
-    topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
-    '''
-        TODO IMPORTANT 
-        process the message 
-    '''
-    words = message.split("_")
-    deviceName = words[0]
-    status = words[1]
-    val = 0
-    if(status == "on"):
-        val = 1
-    elif(status == "off"):
+
+@login_required
+def main(request):
+    if(request.method == "POST"):
+        topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
+        '''
+            TODO IMPORTANT  
+            process the message using NLP
+        '''
+        message = request.POST["message"]
+        words = message.split("_")
+        try:
+            deviceName = words[0]
+            status = words[1]
+        except:
+            return(JsonResponse({'status' : 'fail', 'err_msg' : 'invalid message format.'}))
         val = 0
+        if(status == "on"):
+            val = 1
+        elif(status == "off"):
+            val = 0
+        else:
+            return(JsonResponse({ 'status' : 'failed' , 'err_msg' : 'status can only be on or off'}))
+        device = Device.objects.filter(topic = topic).filter(deviceName = deviceName)
+        if(device.exists()):
+            pinNum = device.get().pinNum
+            ret = publishMessage(topic, pinNum, val)
+            return(JsonResponse({'status' : ret}))
+        else:
+            return(JsonResponse({'status' : "failed", "err_msg" : "device does not exist"}))
     else:
-        return(JsonResponse({ 'status' : 'failed' , 'err_msg' : 'status can only be on or off'}))
-    device = Device.objects.filter(topic = topic).filter(deviceName = deviceName)
-    if(device.exists()):
-        pinNum = device.pinNum
-        publishMessage(topic, pinNum, val)
-    else:
-        return(JsonResponse({'status' : "failed", "err_msg" : "device does not exist"}))
+        return(render(request, "main.html"))
 
 
 
