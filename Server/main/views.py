@@ -98,6 +98,15 @@ def main(request):
             process the message using NLP
         '''
         message = request.POST["message"]
+        print(message)
+
+        deviceList = Device.objects.filter(topic = topic)
+        devices = []
+        for i in deviceList:
+            devices.append(i.deviceName)
+        print(devices)
+
+
         words = message.split("_")
         try:
             deviceName = words[0]
