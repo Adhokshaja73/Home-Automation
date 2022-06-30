@@ -9,19 +9,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <style>
+		header {
+			overflow: hidden;
+			height: 60px;
+			background-color: #000;
+			display: flex;
+			justify-content: space-between;
+			padding: 20px;
+		}
+		.nav-link{
+			color: white;
+			padding-right: 20px;
+			text-decoration: none;
+		}
+		.nav-link:hover{
+			color: #db2303;
 
+		}
+	</style>
 </head>
 
 <body>
     <div class="limiter">
         <header>
-            <div class="topnav">
-                <a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+			<div>
+				<a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
                 color: white;
                 text-decoration: none;
                 cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
-            </div>
-        </header>
+			</div>
+			<nav  style="text-decoration:none;">				
+				<a class="nav-link" href="add_device.html">Add device</a>
+				<a class="nav-link" href="remove_device.html">Remove device</a>
+				<a class="nav-link" href="unlock_door.html">Unlockdoor</a>
+				<a class="nav-link" href="/">Signout</a>
+			</nav>
+		</header>
         <div class="container-login100" style="background-image: url('/static/images/bg-01.jpg');">
             <div class="wrap-login100 p-t-30 p-b-50">
                 <span class="login100-form-title p-b-41" style="margin-bottom: 40px;

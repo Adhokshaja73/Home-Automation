@@ -14,10 +14,9 @@ class Identifier:
         self.myList = os.listdir(self.path)
         print(self.myList)
         for cl in self.myList:
-            curImg = cv2.imread(f'{self.path}/{cl}')
+            curImg = cv2.imread(os.path.join(self.path, cl))
             self.images.append(curImg)
             self.classNames.append(os.path.splitext(cl)[0])
-        
         self.encodeListKnown = self.findEncodings(self.images)
         print('Encoding Complete')
         print(self.classNames)
@@ -27,7 +26,7 @@ class Identifier:
         for img in images:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             encode = face_recognition.face_encodings(img)[0]
-            encodeList.append(encode)
+            encodeList.append(encode)    
         return encodeList
 
 

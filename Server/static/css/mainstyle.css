@@ -11,7 +11,23 @@
   width:320px;
   height:240px;
 }
+header{
+  overflow: hidden;
+  height: 60px;
+  background-color: #000;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+.nav-link{
+  color: white;
+  padding-right: 20px;
+  text-decoration: none;
+}
+.nav-link:hover{
+  color: #db2303;
 
+}
 #photo {
   border: 1px solid black;
   box-shadow: 2px 2px 3px black;
@@ -473,12 +489,31 @@ iframe {
 }
 
 .login100-form-btn:hover {
-  background-color: transparent;
+  background-color: gray;
 }
 
 .login100-form-btn:hover:before {
   opacity: 1;
 }
+.btn{
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 18px;
+  color: #fff;
+  line-height: 1.2;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  min-width: 160px;
+  height: 42px;
+  border-radius: 21px;
+  background: #c80000;
+
+}
+
 
 
 

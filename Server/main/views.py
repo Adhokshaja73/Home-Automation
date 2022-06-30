@@ -35,11 +35,11 @@ def home(request):
         if(currentUserHome.exists()):
             currentUserHome = currentUserHome.get()
             if(Device.objects.filter(topic = currentUserHome.topic).exists()):
-                return(redirect("home.html"))
+                return(redirect("/home.html"))
             else:
-                return(redirect("add_device.html"))
+                return(redirect("/add_device.html"))
         else:
-            return(render(request, "registration.html"))
+            return(render(request, "/registration.html"))
 
 
 @login_required
