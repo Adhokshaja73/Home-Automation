@@ -7,6 +7,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -40,7 +43,6 @@
                         <textarea class="input100" id="textbox" placeholder="Home Command "></textarea>
                     </div>
                 </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
             </div>
         </div>
     </div>
@@ -49,9 +51,8 @@
 
 <script>
 
-    var SpeechRecognition = window.webkitSpeechRecognition;
 
-    var recognition = new SpeechRecognition();
+    var recognition = new window.webkitSpeechRecognition();
 
     var Textbox = $('#textbox');
     var instructions = $('#instructions');
@@ -62,11 +63,12 @@
 
     recognition.onresult = function (event) {
 
+        console.log(event.results)
         var current = event.resultIndex;
 
         var transcript = event.results[current][0].transcript;
 
-        Content += transcript;
+        Content = transcript;
         Textbox.val(Content);
         $.ajax({
             type: 'POST',
@@ -92,6 +94,7 @@
     }
 
     recognition.onerror = function (event) {
+        console.log(event.error)
         if (event.error == 'no-speech') {
             instructions.text('Try again.');
         }
@@ -113,6 +116,7 @@
         recognition.abort();
         instructions.text('press to record');
     });
+    
 </script>
 
 </html>

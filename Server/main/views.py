@@ -1,17 +1,23 @@
-from email import message
-from http.server import HTTPServer
-import imp
-from multiprocessing import reduction
-from os import stat
-from pickletools import read_uint1
+
 from django.shortcuts import render,redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from .models import Device, HomeBoardTopic
 from allauth.account.decorators import login_required   
 
 import paho.mqtt.client as paho
+import re
+import fuzzywuzzy.fuzz as fuzz
 
+from .forms import *
+import cv2
+import numpy as np
+import face_recognition
+from base64 import b64decode
+import os
+from .identifier import *
 # Create your views here
+
+identifier = Identifier()
 
 @login_required
 def home(request):
@@ -69,8 +75,6 @@ def removeDevice(request):
         return(render(request, "remove_device.html"))
 
     
-
-
 def on_publish(client,userdata,result):             #create function for callback
     print("data published \n")
     pass
@@ -93,10 +97,6 @@ def publishMessage(topic, pinNum, val):
 def main(request):
     if(request.method == "POST"):
         topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
-        '''
-            TODO IMPORTANT  
-            process the message using NLP
-        '''
         message = request.POST["message"]
         print(message)
 
@@ -104,31 +104,69 @@ def main(request):
         devices = []
         for i in deviceList:
             devices.append(i.deviceName)
-        print(devices)
+        re.sub('[^A-Za-z0-9 ]+', '', message)
+        message = message.lower()
+        flag = False
+        turnOnRatio = {}
+        turnOffRatio = {}
+        for i in deviceList:
+            turnOnRatio[i.deviceName] = fuzz.ratio("turn on " + i.deviceName, message)
+            turnOffRatio[i.deviceName] = fuzz.ratio("turn off " + i.deviceName, message)
 
-
-        words = message.split("_")
-        try:
-            deviceName = words[0]
-            status = words[1]
-        except:
-            return(JsonResponse({'status' : 'fail', 'err_msg' : 'invalid message format.'}))
-        val = 0
-        if(status == "on"):
-            val = 1
-        elif(status == "off"):
-            val = 0
+        turnOnRatio = sorted(turnOnRatio.items(), key=lambda kv: kv[1])
+        turnOffRatio = sorted(turnOffRatio.items(), key=lambda kv:kv[1])
+        turnOffRatio.reverse()
+        turnOnRatio.reverse()
+        print(turnOffRatio, turnOnRatio)
+        value = 1
+        if(turnOffRatio[0][1]  > turnOnRatio[0][1]):
+            value = 0
+        deviceName = turnOffRatio[0][0]
+        ratio = turnOffRatio[0][1]
+        if(ratio < 95):
+            return(JsonResponse({"status" : "Device Does not exist"}))
         else:
-            return(JsonResponse({ 'status' : 'failed' , 'err_msg' : 'status can only be on or off'}))
-        device = Device.objects.filter(topic = topic).filter(deviceName = deviceName)
-        if(device.exists()):
-            pinNum = device.get().pinNum
-            ret = publishMessage(topic, pinNum, val)
-            return(JsonResponse({'status' : ret}))
-        else:
-            return(JsonResponse({'status' : "failed", "err_msg" : "device does not exist"}))
+            pinNum = deviceList.filter(deviceName = deviceName).get().pinNum
+            publishMessage(topic, pinNum, value)
+            return(JsonResponse({"status" : "turned off device : " + deviceName}))
+        
     else:
         return(render(request, "main.html"))
 
+@login_required
+def addNewImage(request):
+    if(request.method == "POST"):
+        data_uri = request.POST["img"]
+        header, encoded = data_uri.split(",", 1)
+        data = b64decode(encoded)
+        imagePath = os.path.join(os.getcwd(), "media/images/known_people/" + request.user.username + ".jpg" )
+        with open(imagePath, "wb") as f:
+            f.write(data)
+        userImage = UserImages.objects.create(user = request.user , image = "images/known_people/" + request.user.username + ".jpg")
+        userImage.save()   
+        identifier = Identifier()
+        return(JsonResponse({"status" : "success"})) 
+    if(UserImages.objects.filter(user = request.user).exists()):
+        return(redirect("/")) 
+    else:
+        return render(request, 'add_image.html')
 
-
+@login_required
+def unlockDoor(request):
+    if(request.method == "POST"):
+        data_uri = request.POST["img"]
+        header, encoded = data_uri.split(",", 1)
+        data = b64decode(encoded)
+        jpg_as_np = np.frombuffer(data, dtype=np.uint8)
+        img = cv2.imdecode(jpg_as_np, flags=1)
+        names = identifier.check(img)
+        if(request.user.username in names):
+            print("TURN ON SERVO TO UNLOCK")
+            topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
+            publishMessage(topic, 26, 1)
+            return(JsonResponse({"status" : "door unlocked."}))
+        else:
+            print("Wrong face")
+            return(JsonResponse({"status" : "failed"}))
+    else:
+        return(render(request,"unlock_door.html"))

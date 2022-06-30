@@ -12,3 +12,7 @@ class Device(models.Model):
     deviceName = models.CharField(max_length=100)
     pinNum = models.IntegerField()
     topic = models.CharField(max_length=100)
+
+class UserImages(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.FileField(upload_to="images/known_people")

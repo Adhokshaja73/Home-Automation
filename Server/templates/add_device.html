@@ -96,7 +96,7 @@
      var pvalid=document.getElementsByTagName('valid');
      pinno.onkeyup=function()
     {
-       const validpin=/^\b([1-9]|1[0-5]|2[2-8])\b$/;              
+       const validpin=/^\b([1-9]|1[0-5])\b$/;              
        
        if(validpin.test(pinno.value))
        {
@@ -104,7 +104,7 @@
        }
        else
        {
-        pvalid[0].innerText="Should only be from 1-15  and from 22-28";            
+        pvalid[0].innerText="Should only be from 1-15";            
        }
     }
 </script>
