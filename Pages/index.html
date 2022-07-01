@@ -46,7 +46,7 @@
 </body>
 </html>
 <script>
-    var SpeechRecognition = window.webkitSpeechRecognition;
+  var SpeechRecognition = window.webkitSpeechRecognition;
   
   var recognition = new SpeechRecognition();
   
@@ -77,6 +77,7 @@
   }
   
   recognition.onerror = function(event) {
+    console.log("ERROR")
     if(event.error == 'no-speech') {
       instructions.text('Try again.');  
     }
@@ -105,10 +106,5 @@ function mouseUp() {
     instructions.text('press to record'); 
 
 }
-  
-
- 
-  
-    
   
 </script>

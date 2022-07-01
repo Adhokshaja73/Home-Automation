@@ -1,3 +1,4 @@
+from weakref import ref
 import cv2
 import numpy as np
 import face_recognition
@@ -8,6 +9,9 @@ from datetime import datetime
 
 class Identifier:
     def __init__(self):
+        self.refresh()
+        
+    def refresh(self):
         self.path = os.path.join(os.getcwd(),'media/images/known_people')
         self.images = []
         self.classNames = []
@@ -17,9 +21,13 @@ class Identifier:
             curImg = cv2.imread(os.path.join(self.path, cl))
             self.images.append(curImg)
             self.classNames.append(os.path.splitext(cl)[0])
-        self.encodeListKnown = self.findEncodings(self.images)
+        try:
+            self.encodeListKnown = self.findEncodings(self.images)
+        except:
+            return -1
         print('Encoding Complete')
         print(self.classNames)
+        return 1
         
     def findEncodings(self,images):
         encodeList = []
@@ -40,7 +48,10 @@ class Identifier:
         for encodeFace, faceLoc in zip(encodesCurFrame, facesCurFrame):
             matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
             faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
-            matchIndex = np.argmin(faceDis)
+            try:
+                matchIndex = np.argmin(faceDis)
+            except:
+                continue
             if matches[matchIndex]:
                 name = self.classNames[matchIndex]
                 names.append(name)

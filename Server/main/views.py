@@ -1,4 +1,5 @@
 
+from operator import itemgetter
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from .models import Device, HomeBoardTopic
@@ -102,10 +103,17 @@ def main(request):
 
         deviceList = Device.objects.filter(topic = topic)
         devices = []
+
         for i in deviceList:
             devices.append(i.deviceName)
         re.sub('[^A-Za-z0-9 ]+', '', message)
         message = message.lower()
+        if("door" in message):
+            if("unlock" in message):
+                return(redirect("unlock_door.html"))
+            elif("lock" in message):
+                publishMessage(topic, 27, 0)
+                return(JsonResponse({"status" : "Door locked"}))
         flag = False
         turnOnRatio = {}
         turnOffRatio = {}
@@ -119,16 +127,21 @@ def main(request):
         turnOnRatio.reverse()
         print(turnOffRatio, turnOnRatio)
         value = 1
+        status = "on"
+        deviceName = turnOnRatio[0][0]
+        ratio = turnOnRatio[0][1]
         if(turnOffRatio[0][1]  > turnOnRatio[0][1]):
             value = 0
-        deviceName = turnOffRatio[0][0]
-        ratio = turnOffRatio[0][1]
+            status = "off"
+            deviceName = turnOffRatio[0][0]
+            ratio = turnOffRatio[0][1]
+            
         if(ratio < 95):
             return(JsonResponse({"status" : "Device Does not exist"}))
         else:
             pinNum = deviceList.filter(deviceName = deviceName).get().pinNum
             publishMessage(topic, pinNum, value)
-            return(JsonResponse({"status" : "turned off device : " + deviceName}))
+            return(JsonResponse({"status" : "Turned "+ status +" "+ deviceName}))
         
     else:
         return(render(request, "main.html"))
@@ -144,8 +157,11 @@ def addNewImage(request):
             f.write(data)
         userImage = UserImages.objects.create(user = request.user , image = "images/known_people/" + request.user.username + ".jpg")
         userImage.save()   
-        identifier = Identifier()
-        return(JsonResponse({"status" : "success"})) 
+        retVal = identifier.refresh()
+        if(retVal == 1):
+            return(JsonResponse({"status" : "success"})) 
+        else:
+            return(JsonResponse({"status" : "failed"}))
     if(UserImages.objects.filter(user = request.user).exists()):
         return(redirect("/")) 
     else:
@@ -163,10 +179,10 @@ def unlockDoor(request):
         if(request.user.username in names):
             print("TURN ON SERVO TO UNLOCK")
             topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
-            publishMessage(topic, 26, 1)
-            return(JsonResponse({"status" : "door unlocked."}))
+            publishMessage(topic, 27, 1)
+            return(JsonResponse({"status" : "Door Unlocked"}))
         else:
             print("Wrong face")
-            return(JsonResponse({"status" : "failed"}))
+            return(JsonResponse({"status" : "UnAuthorized Person"}))
     else:
         return(render(request,"unlock_door.html"))
