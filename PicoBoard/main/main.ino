@@ -2,6 +2,10 @@
 #include <EthernetClient.h>
 #include <Ethernet.h>
 #include <PubSubClient.h>
+
+#include <Servo.h>
+Servo myservo;  
+
 int ledpin = 1;
 // Update these with values suitable for your network.
 byte mac[] = {0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED};
@@ -42,10 +46,11 @@ void callback(char *topic, byte *payload, unsigned int length)
   {
     if(val == 1){
       // servo unlock
-      for(int i = 0; i < 255; i )
+       myservo.write(0); 
     }
     else{
       // servo lock
+       myservo.write(90); 
     }
   }
   else
@@ -82,6 +87,8 @@ void reconnect()
 
 void setup()
 {
+    myservo.attach(27);  // attaches the servo on pin 9 to the servo object
+
   Ethernet.init(17); // WIZnet W5100S-EVB-Pico
   Serial.begin(9600);
   while (!Serial)
