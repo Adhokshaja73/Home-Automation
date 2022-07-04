@@ -43,6 +43,7 @@
                         <div class="container-login100-form-btn m-t-32" style="margin-top: -20px;">
                             <input type=button id="btn" value="Take Picture" onClick="take_snapshot()"
                                 class="login100-form-btn" style="margin-bottom: 30px;">
+                            <span id="msg"></span>
                             <input type=button id="submit" value="Store" style="display: none;" class="login100-form-btn" style="margin-bottom: 30px;">
                         </div>
                     </div>
@@ -99,7 +100,7 @@
           csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
       },
       success: function(msg){
-  
+            document.getElementById("msg").innerText = msg.status
           // Redirect here if msg is success
       }
   });

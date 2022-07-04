@@ -3,8 +3,6 @@
 #include <Ethernet.h>
 #include <PubSubClient.h>
 
-#include <Servo.h>
-Servo myservo;  
 
 int ledpin = 1;
 // Update these with values suitable for your network.
@@ -42,21 +40,8 @@ void callback(char *topic, byte *payload, unsigned int length)
   Serial.print(val);
 
   Serial.println();
-  if (pinNum == 27)
-  {
-    if(val == 1){
-      // servo unlock
-       myservo.write(0); 
-    }
-    else{
-      // servo lock
-       myservo.write(90); 
-    }
-  }
-  else
-  {
+
     digitalWrite(pinNum, val);
-  }
 }
 
 void reconnect()
@@ -87,8 +72,7 @@ void reconnect()
 
 void setup()
 {
-    myservo.attach(27);  // attaches the servo on pin 9 to the servo object
-
+   
   Ethernet.init(17); // WIZnet W5100S-EVB-Pico
   Serial.begin(9600);
   while (!Serial)

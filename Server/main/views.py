@@ -36,11 +36,11 @@ def home(request):
         if(currentUserHome.exists()):
             currentUserHome = currentUserHome.get()
             if(Device.objects.filter(topic = currentUserHome.topic).exists()):
-                return(redirect("/home.html"))
+                return(redirect("home.html"))
             else:
-                return(redirect("/add_device.html"))
+                return(redirect("add_device.html"))
         else:
-            return(render(request, "/registration.html"))
+            return(render(request, "registration.html"))
 
 
 @login_required
@@ -81,7 +81,7 @@ def on_publish(client,userdata,result):             #create function for callbac
     pass
 
 def publishMessage(topic, pinNum, val):
-    broker="localhost"
+    broker="10.5.15.103"
     port=1883
     client1= paho.Client("control1")                           #create client object
     client1.on_publish = on_publish                          #assign function to callback
@@ -96,6 +96,8 @@ def publishMessage(topic, pinNum, val):
 
 @login_required
 def main(request):
+    if(not UserImages.objects.filter(user = request.user).exists()):
+        return(redirect("add_image.html"))
     if(request.method == "POST"):
         topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
         message = request.POST["message"]
@@ -112,7 +114,7 @@ def main(request):
             if("unlock" in message):
                 return(redirect("unlock_door.html"))
             elif("lock" in message):
-                publishMessage(topic, 27, 0)
+                publishMessage(topic, 28, 0)
                 return(JsonResponse({"status" : "Door locked"}))
         flag = False
         turnOnRatio = {}
@@ -135,14 +137,13 @@ def main(request):
             status = "off"
             deviceName = turnOffRatio[0][0]
             ratio = turnOffRatio[0][1]
-            
+        print(ratio)
         if(ratio < 95):
             return(JsonResponse({"status" : "Device Does not exist"}))
         else:
             pinNum = deviceList.filter(deviceName = deviceName).get().pinNum
             publishMessage(topic, pinNum, value)
-            return(JsonResponse({"status" : "Turned "+ status +" "+ deviceName}))
-        
+            return(JsonResponse({"status" : "Turned "+ status +" "+ deviceName}))    
     else:
         return(render(request, "main.html"))
 
@@ -154,11 +155,11 @@ def addNewImage(request):
         data = b64decode(encoded)
         imagePath = os.path.join(os.getcwd(), "media/images/known_people/" + request.user.username + ".jpg" )
         with open(imagePath, "wb") as f:
-            f.write(data)
-        userImage = UserImages.objects.create(user = request.user , image = "images/known_people/" + request.user.username + ".jpg")
-        userImage.save()   
+            f.write(data)  
         retVal = identifier.refresh()
         if(retVal == 1):
+            userImage = UserImages.objects.create(user = request.user , image = "images/known_people/" + request.user.username + ".jpg")
+            userImage.save()
             return(JsonResponse({"status" : "success"})) 
         else:
             return(JsonResponse({"status" : "failed"}))
@@ -179,7 +180,7 @@ def unlockDoor(request):
         if(request.user.username in names):
             print("TURN ON SERVO TO UNLOCK")
             topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
-            publishMessage(topic, 27, 1)
+            publishMessage(topic, 28, 1)
             return(JsonResponse({"status" : "Door Unlocked"}))
         else:
             print("Wrong face")
