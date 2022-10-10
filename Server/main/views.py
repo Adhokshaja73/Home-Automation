@@ -75,7 +75,8 @@ def removeDevice(request):
     else:
         return(render(request, "remove_device.html"))
 
-    
+
+# MQTT FUNCTIONS
 def on_publish(client,userdata,result):             #create function for callback
     print("data published \n")
     pass
@@ -106,6 +107,9 @@ def main(request):
         deviceList = Device.objects.filter(topic = topic)
         devices = []
 
+        # Using fuzzywuzzy to match input command with all 
+        # device names
+        # improve this with NLP
         for i in deviceList:
             devices.append(i.deviceName)
         re.sub('[^A-Za-z0-9 ]+', '', message)
@@ -125,8 +129,10 @@ def main(request):
 
         turnOnRatio = sorted(turnOnRatio.items(), key=lambda kv: kv[1])
         turnOffRatio = sorted(turnOffRatio.items(), key=lambda kv:kv[1])
+        
         turnOffRatio.reverse()
         turnOnRatio.reverse()
+        
         print(turnOffRatio, turnOnRatio)
         value = 1
         status = "on"
