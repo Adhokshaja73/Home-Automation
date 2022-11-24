@@ -90,6 +90,7 @@
     }  
     
     document.getElementById("submit").onclick = function(){
+      this.innerHTML = "<div class='loader'></div>";
       $.ajax({
       type: 'POST',
       // make sure you respect the same origin policy with this url:
@@ -102,6 +103,9 @@
       success: function(msg){
             document.getElementById("msg").innerText = msg.status
           // Redirect here if msg is success
+          if(msg.status == "Success"){
+            window.location.replace("./")
+        }
       }
   });
 }

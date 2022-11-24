@@ -17,7 +17,7 @@ PubSubClient client(ethClient);
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
-  Serial.print("Message arrived [");
+  Serial.print("Message arrived");
   Serial.print(topic);
   Serial.print("] ");
   char messageBuffer[30];

@@ -2,6 +2,7 @@ from weakref import ref
 import cv2
 import numpy as np
 import face_recognition
+from deepface import DeepFace
 import os
 from datetime import datetime
 
@@ -10,7 +11,7 @@ from datetime import datetime
 class Identifier:
     def __init__(self):
         self.refresh()
-        
+        #  remove
     def refresh(self):
         self.path = os.path.join(os.getcwd(),'media/images/known_people')
         self.images = []
@@ -39,6 +40,7 @@ class Identifier:
 
 
     def check(self,img):
+        
     # img = captureScreen()
         imgS = cv2.resize(img, (0, 0), None, 0.25, 0.25)
         imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
