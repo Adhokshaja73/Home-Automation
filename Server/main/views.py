@@ -16,10 +16,14 @@ from deepface import DeepFace
 from .forms import *
 import cv2
 import numpy as np
-import face_recognition
+
 from base64 import b64decode
 import os
 import boto3
+
+import nltk
+import spacy
+import locationtagger
 # from .identifier import *
 # Create your views here
 
@@ -60,8 +64,8 @@ def connect_mqtt():
     client.connect(broker, port)
     return client
 
-client = connect_mqtt()
-client.loop_start()
+# client = connect_mqtt()
+# client.loop_start()
 
 @login_required
 def home(request):
@@ -136,6 +140,7 @@ def publishMessage(topic, pinNum, val):
 def main(request):
     if(not UserImages.objects.filter(user = request.user).exists()):
         return(redirect("add_image.html"))
+
     if(request.method == "POST"):
         topic = HomeBoardTopic.objects.filter(user = request.user).get().topic
         message = request.POST["message"]
@@ -150,6 +155,7 @@ def main(request):
         for i in deviceList:
             devices.append(i.deviceName)
         re.sub('[^A-Za-z0-9 ]+', '', message)
+        msg=message
         message = message.lower()
         if("door" in message):
             if("unlock" in message):
@@ -157,6 +163,13 @@ def main(request):
             elif("lock" in message):
                 publishMessage(topic, 28, 0)
                 return(JsonResponse({"status" : "Door locked"}))
+        # if("weather" in message):
+        #     place_entity = locationtagger.find_locations(text = msg)
+        #     city=place_entity.cities
+        #     print("City - ",city)
+        #     return(JsonResponse({"status" : city}))
+
+
         flag = False
         turnOnRatio = {}
         turnOffRatio = {}
@@ -207,7 +220,7 @@ def addNewImage(request):
         print(results)     
         if (bool(results)==True):
             print(results[0]['confidence'])
-            if (results[0]['confidence'] > 0.97 and len(results)==1):
+            if (results[0]['confidence'] > 0.97 and len(results) == 1):
                 print(results[0]['confidence'])
                 userImage = UserImages.objects.create(user = request.user , image = "images/known_people/" + request.user.username + ".jpg")
                 userImage.save()

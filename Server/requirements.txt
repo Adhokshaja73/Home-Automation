@@ -27,3 +27,4 @@ deepface
 mtcnn
 matplotlib
 boto3
+locationtagger

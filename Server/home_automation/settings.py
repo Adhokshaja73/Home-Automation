@@ -92,9 +92,16 @@ STATIC_ROOT = Path(BASE_DIR).joinpath('static')  # new
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default' : {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST' : 'mini-project.cpdcyq7bgfly.us-east-1.rds.amazonaws.com',
+        'USER' : 'admin',
+        'PASSWORD':'meghana1841129!',
+        'NAME' :'home_automation'
     }
 }
 
